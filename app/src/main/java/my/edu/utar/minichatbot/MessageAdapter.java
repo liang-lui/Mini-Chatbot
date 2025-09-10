@@ -4,25 +4,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_USER = 1;
+    private static final int TYPE_BOT = 2;
 
-    private List<ChatMessage> messages;
-    private static final int TYPE_USER = 0;
-    private static final int TYPE_BOT = 1;
+    private List<Message> messages;
 
-    public ChatAdapter(List<ChatMessage> messages) {
+    public MessageAdapter(List<Message> messages) {
         this.messages = messages;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return messages.get(position).isUser() ? TYPE_USER : TYPE_BOT;
     }
 
     @NonNull
@@ -39,11 +32,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ChatMessage message = messages.get(position);
+        Message message = messages.get(position);
+
         if (holder instanceof UserViewHolder) {
-            ((UserViewHolder) holder).userMessage.setText(message.getMessage());
-        } else {
-            ((BotViewHolder) holder).botMessage.setText(message.getMessage());
+            ((UserViewHolder) holder).userMessage.setText(message.getText());
+        } else if (holder instanceof BotViewHolder) {
+            ((BotViewHolder) holder).botMessage.setText(message.getText());
         }
     }
 
@@ -52,17 +46,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return messages.size();
     }
 
-    static class UserViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public int getItemViewType(int position) {
+        return messages.get(position).isUser() ? TYPE_USER : TYPE_BOT;
+    }
+
+    public static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView userMessage;
-        UserViewHolder(View itemView) {
+
+        public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             userMessage = itemView.findViewById(R.id.userMessage);
         }
     }
 
-    static class BotViewHolder extends RecyclerView.ViewHolder {
+    public static class BotViewHolder extends RecyclerView.ViewHolder {
         TextView botMessage;
-        BotViewHolder(View itemView) {
+
+        public BotViewHolder(@NonNull View itemView) {
             super(itemView);
             botMessage = itemView.findViewById(R.id.botMessage);
         }
